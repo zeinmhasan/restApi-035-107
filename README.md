@@ -1,4 +1,5 @@
 # Anggota Kelompok
+<p>Kelas: B</p>
 <table>
   <thead>
     <tr>
