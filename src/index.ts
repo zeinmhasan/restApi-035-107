@@ -9,6 +9,8 @@ dotenv.config();
 const app = express();
 const port = Number(process.env.PORT || 3000);
 
+app.set("json spaces", 2);
+
 app.use(express.json());
 
 app.get("/health", (_req: Request, res: Response) => {

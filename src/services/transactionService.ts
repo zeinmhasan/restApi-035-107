@@ -1,8 +1,11 @@
 import { AppError } from "../errors/AppError";
 import {
   createTransaction,
+  deleteTransaction,
   findTransactionById,
   findTransactions,
+  updateTransaction,
+  getSummary,
 } from "../repositories/transactionRepository";
 import {
   DateFilter,
@@ -82,5 +85,38 @@ export async function createNewTransaction(
 ): Promise<TransactionResponse> {
   const parsedPayload = parseTransactionPayload(payload);
   const row = await createTransaction(parsedPayload);
+  return toTransactionResponse(row);
+}
+
+export async function deleteTransactionById(
+  rawId: string,
+): Promise<TransactionResponse> {
+  const id = parsePositiveId(rawId);
+  const row = await deleteTransaction(id);
+
+  if (!row) {
+    throw new AppError(404, "Transaction not found");
+  }
+
+  return toTransactionResponse(row);
+}
+
+
+export async function getTransactionSummary() {
+  const summary = await getSummary();
+
+  return summary;
+}
+
+export async function updateTransactionById(
+  rawId: string,
+  payload: unknown,
+): Promise<TransactionResponse> {
+  const id = parsePositiveId(rawId);
+  const parsedPayload = parseTransactionPayload(payload);
+  const row = await updateTransaction(id, parsedPayload);
+  if (!row) {
+    throw new AppError(404, "Transaction not found");
+  }
   return toTransactionResponse(row);
 }

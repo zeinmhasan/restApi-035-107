@@ -75,3 +75,74 @@ export async function createTransaction(
 
   return result.rows[0];
 }
+
+export async function deleteTransaction(
+  id: number,
+): Promise<TransactionRow | null> {
+  const result = await query<TransactionRow>(
+    `DELETE FROM transactions
+     WHERE id = $1
+     RETURNING id, type, amount, note, tx_date, created_at`,
+    [id],
+  );
+
+  return result.rowCount === 0 ? null : result.rows[0];
+}
+
+
+export async function updateTransaction(
+  id: number,
+  payload: TransactionPayload,
+): Promise<TransactionRow | null> {
+  const result = await query<TransactionRow>(
+    `UPDATE transactions 
+     SET type = $1, amount = $2, note = $3, tx_date = $4
+     WHERE id = $5
+     RETURNING id, type, amount, note, tx_date, created_at`,
+    [payload.type, payload.amount, payload.note, payload.date, id],
+  );
+
+
+  return result.rowCount === 0 ? null : result.rows[0];
+}
+
+export async function getSummary(): Promise<{
+  totalIncome: number;
+  totalExpense: number;
+  balance: number;
+}> {
+  const result = await query<any>(
+    `SELECT 
+      COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) AS "totalIncome",
+      COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) AS "totalExpense"
+     FROM transactions`,
+    []
+  );
+
+  const row = result.rows[0];
+  const totalIncome = Number(row.totalIncome);
+  const totalExpense = Number(row.totalExpense);
+  const balance = totalIncome - totalExpense;
+
+  return {
+    totalIncome,
+    totalExpense,
+    balance,
+  };
+}
+
+export async function updateTransactionById(
+  id: number,
+  payload: TransactionPayload,
+): Promise<TransactionRow | null> {
+  const result = await query<TransactionRow>(
+    `UPDATE transactions 
+     SET type = $1, amount = $2, note = $3, tx_date = $4
+     WHERE id = $5
+     RETURNING id, type, amount, note, tx_date, created_at`,
+    [payload.type, payload.amount, payload.note, payload.date, id],
+  );
+
+
+  return result.rowCount === 0 ? null : result.rows[0];
+}
