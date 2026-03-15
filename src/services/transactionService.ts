@@ -1,17 +1,13 @@
 import { AppError } from "../errors/AppError";
 import {
   createTransaction,
-  deleteTransaction,
   findTransactionById,
   findTransactions,
-  getSummary,
-  updateTransaction,
 } from "../repositories/transactionRepository";
 import {
   DateFilter,
   TransactionFilter,
   TransactionResponse,
-  SummaryRow,
 } from "../types/transaction";
 import {
   isValidType,
@@ -87,46 +83,4 @@ export async function createNewTransaction(
   const parsedPayload = parseTransactionPayload(payload);
   const row = await createTransaction(parsedPayload);
   return toTransactionResponse(row);
-}
-
-export async function editTransaction(
-  rawId: string,
-  payload: unknown,
-): Promise<TransactionResponse> {
-  const id = parsePositiveId(rawId);
-  const parsedPayload = parseTransactionPayload(payload);
-
-  const row = await updateTransaction(id, parsedPayload);
-
-  if (!row) {
-    throw new AppError(404, "Transaction not found");
-  }
-
-  return toTransactionResponse(row);
-}
-
-export async function removeTransaction(rawId: string): Promise<void> {
-  const id = parsePositiveId(rawId);
-  const deleted = await deleteTransaction(id);
-
-  if (!deleted) {
-    throw new AppError(404, "Transaction not found");
-  }
-}
-
-export async function getTransactionSummary(input: {
-  startDate?: unknown;
-  endDate?: unknown;
-}): Promise<{ income: number; expense: number; balance: number }> {
-  const filters = parseDateFilters(input);
-  const summary: SummaryRow = await getSummary(filters);
-
-  const income = Number(summary.income);
-  const expense = Number(summary.expense);
-
-  return {
-    income,
-    expense,
-    balance: income - expense,
-  };
 }

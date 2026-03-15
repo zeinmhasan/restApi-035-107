@@ -1,7 +1,6 @@
 import { query } from "../db";
 import {
   DateFilter,
-  SummaryRow,
   TransactionFilter,
   TransactionPayload,
   TransactionRow,
@@ -72,51 +71,6 @@ export async function createTransaction(
      VALUES ($1, $2, $3, $4)
      RETURNING id, type, amount, note, tx_date, created_at`,
     [payload.type, payload.amount, payload.note, payload.date],
-  );
-
-  return result.rows[0];
-}
-
-export async function updateTransaction(
-  id: number,
-  payload: TransactionPayload,
-): Promise<TransactionRow | null> {
-  const result = await query<TransactionRow>(
-    `UPDATE transactions
-     SET type = $1,
-         amount = $2,
-         note = $3,
-         tx_date = $4
-     WHERE id = $5
-     RETURNING id, type, amount, note, tx_date, created_at`,
-    [payload.type, payload.amount, payload.note, payload.date, id],
-  );
-
-  return result.rowCount === 0 ? null : result.rows[0];
-}
-
-export async function deleteTransaction(id: number): Promise<boolean> {
-  const result = await query(
-    `DELETE FROM transactions
-     WHERE id = $1`,
-    [id],
-  );
-
-  return (result.rowCount ?? 0) > 0;
-}
-
-export async function getSummary(filter: DateFilter): Promise<SummaryRow> {
-  const { conditions, params } = buildDateConditions(filter);
-  const whereClause =
-    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
-
-  const result = await query<SummaryRow>(
-    `SELECT
-       COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) AS income,
-       COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) AS expense
-     FROM transactions
-     ${whereClause}`,
-    params,
   );
 
   return result.rows[0];
