@@ -1,3 +1,28 @@
+# Anggota Kelompok
+<table>
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>Nama</th>
+      <th>NRP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Zein muhammad hasan</td>
+      <td>5027241035</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Jofanka Al-kautsar Pangestu Abady</td>
+      <td>5027241107</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
 # Personal Finance API
 
 REST API sederhana untuk transaksi keuangan pribadi dengan fitur:
@@ -5,6 +30,9 @@ REST API sederhana untuk transaksi keuangan pribadi dengan fitur:
 - GET all transaksi
 - GET transaksi by id
 - POST transaksi
+- PUT transaksi
+- DELETE transaksi
+- GET summary (income, expense, balance)
 
 ## Stack
 
@@ -23,20 +51,9 @@ API berjalan di:
 
 - `http://localhost:3000`
 
-## Status Fitur
+## Dokumentasi API
 
-### Fitur yang sudah tersedia
-
-- GET /health
-- GET /transactions
-- GET /transactions/:id
-- POST /transactions
-
-### Fitur yang belum tersedia
-
-- PUT /transactions/:id
-- DELETE /transactions/:id
-- GET /summary
+- Apidog: https://y48pil2w70.apidog.io
 
 ## Endpoint
 
@@ -49,6 +66,8 @@ API berjalan di:
 - `GET /transactions`
 - `GET /transactions/:id`
 - `POST /transactions`
+- `PUT /transactions/:id`
+- `DELETE /transactions/:id`
 
 Query params opsional untuk list:
 
@@ -56,7 +75,7 @@ Query params opsional untuk list:
 - `startDate=YYYY-MM-DD`
 - `endDate=YYYY-MM-DD`
 
-Body untuk POST:
+Body untuk POST/PUT:
 
 ```json
 {
@@ -64,6 +83,23 @@ Body untuk POST:
   "amount": 1500000,
   "note": "Gaji part-time",
   "date": "2026-03-15"
+}
+```
+
+### 3) Summary
+
+- `GET /summary`
+- `GET /summary?startDate=2026-03-01&endDate=2026-03-31`
+
+Response:
+
+```json
+{
+  "data": {
+    "income": 1500000,
+    "expense": 200000,
+    "balance": 1300000
+  }
 }
 ```
 
